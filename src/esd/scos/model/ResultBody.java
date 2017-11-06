@@ -1,19 +1,17 @@
 package esd.scos.model;
 
-public class Body {
+public class ResultBody {
     // 状态值
     private  int RESULTCODE;
-
     // 消息
     private  String msg;
-
     // 携带对象字符串
-    private  String jsonString;
+    private  String dataString;
 
-    public Body(int RESULTCODE, String msg, String jsonString) {
+    public ResultBody(int RESULTCODE, String msg, String dataString) {
         this.RESULTCODE = RESULTCODE;
         this.msg = msg;
-        this.jsonString = jsonString;
+        this.dataString = dataString;
     }
 
     public int getRESULTCODE() {
@@ -32,11 +30,11 @@ public class Body {
         this.msg = msg;
     }
 
-    public String getJsonString() {
-        return jsonString;
+    public String getDataString() {
+        return dataString;
     }
 
-    public void setJsonString(String jsonString) {
-        this.jsonString = jsonString;
+    public void setDataString(String dataString) {
+        this.dataString = dataString;
     }
 }

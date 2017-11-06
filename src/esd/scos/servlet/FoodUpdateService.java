@@ -1,35 +1,56 @@
 package esd.scos.servlet;
 
+import com.google.gson.Gson;
+import esd.scos.model.Food;
+import esd.scos.model.ResultBody;
 import esd.scos.util.CommonUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 
 public class FoodUpdateService extends javax.servlet.http.HttpServlet {
-    protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
+
+    private static final int TYPE_JSON = 1;
+    private static final int TYPE_XML = 2;
+    private static int Type;
+
+    protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse
+            response) throws javax.servlet.ServletException, IOException {
         doGet(request, response);
     }
 
-    protected void doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
-//        response.setContentType("text/html");
-//        PrintWriter out = response.getWriter();
-//        out.println("welcome");
-//        out.flush();
-//        out.close();
-        response.setContentType("application/json");
-        String jsonStr = "{\"name\":\"fly\",\"type\":\"虫子\"}";
-        CommonUtils.putJsonToResponse(response, jsonStr);
-//        PrintWriter out = response.getWriter();
-//        out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-//        out.println("<HTML>");
-//        out.println("  <HEAD><TITLE>A Servlet</TITLE></HEAD>");
-//        out.println("  <BODY>");
-//        out.print("    This is ");
-//        out.print(this.getClass());
-//        out.println(", using the POST method");
-//        out.println("  </BODY>");
-//        out.println("</HTML>");
-//        out.flush();
-//        out.close();
+    protected void doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse
+            response) throws javax.servlet.ServletException, IOException {
+
+        // 判断发送数据内容
+        Type = request.getContentType().equals("applicaiton/json")?TYPE_JSON:TYPE_XML;
+
+        request.setCharacterEncoding("utf-8");
+
+        List<Food> foodList = CommonUtils.getFoodList(1000);
+
+        if (Type == TYPE_JSON) {
+            // send json
+            String foodListJson = new Gson().toJson(foodList);
+            response.setContentType("application/json;charset=utf-8");
+            ResultBody resultBody = new ResultBody(1, "请求成功", foodListJson);
+            String resultJson = new Gson().toJson(resultBody);
+            CommonUtils.putDataToResponse(response, resultJson);
+        } else if (Type == TYPE_XML) {
+            // send xml
+            Element dataString = CommonUtils.parseFoodListToXml(foodList);
+            response.setContentType("text/xml; charset=utf-8");
+            Document foodDoc = DocumentHelper.createDocument();
+            Element result = foodDoc.addElement("Result");
+            Element resultCode = result.addElement("RESULTCODE");
+            resultCode.addText("1");
+            Element message = result.addElement("message");
+            message.addText("请求成功");
+            result.add(dataString);
+            CommonUtils.putDataToResponse(response, foodDoc.asXML());
+        }
     }
 }

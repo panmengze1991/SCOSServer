@@ -10,7 +10,7 @@
   <head>
     <title>$Title$</title>
   </head>
-  <body>
+  <resultBody>
   $END$
-  </body>
+  </resultBody>
 </html>
